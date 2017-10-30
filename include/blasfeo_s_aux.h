@@ -41,24 +41,19 @@ extern "C" {
 ************************************************/
 
 // returns the memory size (in bytes) needed for a strmat
-int s_size_strmat(int m, int n);
-// returns the memory size (in bytes) needed for the diagonal of a strmat
-int s_size_diag_strmat(int m, int n);
+int s_memsize_strmat(int m, int n);
 // returns the memory size (in bytes) needed for a strvec
-int s_size_strvec(int m);
+int s_memsize_strvec(int m);
 // create a strmat for a matrix of size m*n by using memory passed by a pointer (pointer is not updated)
-void s_create_strmat(int m, int n, struct s_strmat *sA, void *memory);
+struct s_strmat * s_create_strmat(int m, int n, void *memory);
 // create a strvec for a vector of size m by using memory passed by a pointer (pointer is not updated)
-void s_create_strvec(int m, struct s_strvec *sA, void *memory);
+struct s_strvec * s_create_strvec(int m, void *memory);
 void s_cvt_mat2strmat(int m, int n, float *A, int lda, struct s_strmat *sA, int ai, int aj);
 void s_cvt_vec2strvec(int m, float *a, struct s_strvec *sa, int ai);
 void s_cvt_tran_mat2strmat(int m, int n, float *A, int lda, struct s_strmat *sA, int ai, int aj);
 void s_cvt_strmat2mat(int m, int n, struct s_strmat *sA, int ai, int aj, float *A, int lda);
 void s_cvt_strvec2vec(int m, struct s_strvec *sa, int ai, float *a);
 void s_cvt_tran_strmat2mat(int m, int n, struct s_strmat *sA, int ai, int aj, float *A, int lda);
-void s_cast_mat2strmat(float *A, struct s_strmat *sA);
-void s_cast_diag_mat2strmat(float *dA, struct s_strmat *sA);
-void s_cast_vec2vecmat(float *a, struct s_strvec *sa);
 void sgein1_libstr(float a, struct s_strmat *sA, int ai, int aj);
 float sgeex1_libstr(struct s_strmat *sA, int ai, int aj);
 void svecin1_libstr(float a, struct s_strvec *sx, int xi);

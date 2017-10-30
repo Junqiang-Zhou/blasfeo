@@ -239,37 +239,37 @@ int main()
 
 		// matrix struct
 #if 0
-		struct d_strmat sA; d_allocate_strmat(n+4, n+4, &sA);
-		struct d_strmat sB; d_allocate_strmat(n+4, n+4, &sB);
-		struct d_strmat sC; d_allocate_strmat(n+4, n+4, &sC);
-		struct d_strmat sD; d_allocate_strmat(n+4, n+4, &sD);
-		struct d_strmat sE; d_allocate_strmat(n+4, n+4, &sE);
+		struct d_strmat *sA = d_allocate_strmat(n+4, n+4);
+		struct d_strmat *sB = d_allocate_strmat(n+4, n+4);
+		struct d_strmat *sC = d_allocate_strmat(n+4, n+4);
+		struct d_strmat *sD = d_allocate_strmat(n+4, n+4);
+		struct d_strmat *sE = d_allocate_strmat(n+4, n+4);
 #else
-		struct d_strmat sA; d_allocate_strmat(n, n, &sA);
-		struct d_strmat sB; d_allocate_strmat(n, n, &sB);
-		struct d_strmat sB2; d_allocate_strmat(n, n, &sB2);
-		struct d_strmat sB3; d_allocate_strmat(n, n, &sB3);
-		struct d_strmat sC; d_allocate_strmat(n, n, &sC);
-		struct d_strmat sD; d_allocate_strmat(n, n, &sD);
-		struct d_strmat sE; d_allocate_strmat(n, n, &sE);
+		struct d_strmat *sA = d_allocate_strmat(n, n);
+		struct d_strmat *sB = d_allocate_strmat(n, n);
+		struct d_strmat *sB2 = d_allocate_strmat(n, n);
+		struct d_strmat *sB3 = d_allocate_strmat(n, n);
+		struct d_strmat *sC = d_allocate_strmat(n, n);
+		struct d_strmat *sD = d_allocate_strmat(n, n);
+		struct d_strmat *sE = d_allocate_strmat(n, n);
 #endif
-		struct d_strvec sx; d_allocate_strvec(n, &sx);
-		struct d_strvec sy; d_allocate_strvec(n, &sy);
-		struct d_strvec sz; d_allocate_strvec(n, &sz);
+		struct d_strvec *sx = d_allocate_strvec(n);
+		struct d_strvec *sy = d_allocate_strvec(n);
+		struct d_strvec *sz = d_allocate_strvec(n);
 
-		d_cvt_mat2strmat(n, n, A, n, &sA, 0, 0);
-		d_cvt_mat2strmat(n, n, B, n, &sB, 0, 0);
-		d_cvt_mat2strmat(n, n, B2, n, &sB2, 0, 0);
-		d_cvt_vec2strvec(n, x, &sx, 0);
+		d_cvt_mat2strmat(n, n, A, n, sA, 0, 0);
+		d_cvt_mat2strmat(n, n, B, n, sB, 0, 0);
+		d_cvt_mat2strmat(n, n, B2, n, sB2, 0, 0);
+		d_cvt_vec2strvec(n, x, sx, 0);
 		int ii;
 		for(ii=0; ii<n; ii++)
 			{
-			DMATEL_LIBSTR(&sB3, ii, ii) = 1.0;
-//			DMATEL_LIBSTR(&sB3, n-1, ii) = 1.0;
-			DMATEL_LIBSTR(&sB3, ii, n-1) = 1.0;
-			DVECEL_LIBSTR(&sx, ii) = 1.0;
+			DMATEL_LIBSTR(sB3, ii, ii) = 1.0;
+//			DMATEL_LIBSTR(sB3, n-1, ii) = 1.0;
+			DMATEL_LIBSTR(sB3, ii, n-1) = 1.0;
+			DVECEL_LIBSTR(sx, ii) = 1.0;
 			}
-//		d_print_strmat(n, n, &sB3, 0, 0);
+//		d_print_strmat(n, n, sB3, 0, 0);
 //		if(n==20) return;
 
 		int qr_work_size = 0;//dgeqrf_work_size_libstr(n, n);
@@ -281,7 +281,7 @@ int main()
 		v_zeros_align(&lq_work, lq_work_size);
 
 		// create matrix to pivot all the time
-//		dgemm_nt_libstr(n, n, n, 1.0, &sA, 0, 0, &sA, 0, 0, 1.0, &sB, 0, 0, &sD, 0, 0);
+//		dgemm_nt_libstr(n, n, n, 1.0, sA, 0, 0, sA, 0, 0, 1.0, sB, 0, 0, sD, 0, 0);
 
 		double *dummy;
 
@@ -293,7 +293,7 @@ int main()
 		/* warm up */
 		for(rep=0; rep<nrep; rep++)
 			{
-			dgemm_nt_libstr(n, n, n, 1.0, &sA, 0, 0, &sA, 0, 0, 1.0, &sB, 0, 0, &sC, 0, 0);
+			dgemm_nt_libstr(n, n, n, 1.0, sA, 0, 0, sA, 0, 0, 1.0, sB, 0, 0, sC, 0, 0);
 			}
 
 		double alpha = 1.0;
@@ -341,31 +341,31 @@ int main()
 //			kernel_dgemm_nn_4x8_lib4(n, &alpha, sA.pA, 0, sB.pA, sB.cn, &beta, sD.pA, sD.pA);
 //			kernel_dgemm_nn_4x4_lib4(n, &alpha, sA.pA, 0, sB.pA, sB.cn, &beta, sD.pA, sD.pA);
 
-			dgemm_nt_libstr(n, n, n, 1.0, &sA, 0, 0, &sB, 0, 0, 0.0, &sC, 0, 0, &sD, 0, 0);
-//			dgemm_nn_libstr(n, n, n, 1.0, &sA, 0, 0, &sB, 0, 0, 0.0, &sC, 0, 0, &sD, 0, 0);
-//			dsyrk_ln_libstr(n, n, 1.0, &sA, 0, 0, &sA, 0, 0, 0.0, &sC, 0, 0, &sD, 0, 0);
-//			dsyrk_ln_mn_libstr(n, n, n, 1.0, &sA, 0, 0, &sA, 0, 0, 0.0, &sC, 0, 0, &sD, 0, 0);
-//			dpotrf_l_mn_libstr(n, n, &sB, 0, 0, &sB, 0, 0);
-//			dpotrf_l_libstr(n, &sB, 0, 0, &sB, 0, 0);
-//			dgetrf_nopivot_libstr(n, n, &sB, 0, 0, &sB, 0, 0);
-//			dgetrf_libstr(n, n, &sB, 0, 0, &sB, 0, 0, ipiv);
-//			dgeqrf_libstr(n, n, &sC, 0, 0, &sD, 0, 0, qr_work);
-//			dcolin_libstr(n, &sx, 0, &sB3, 0, n-1);
-//			dgelqf_libstr(n, n, &sB3, 0, 0, &sB3, 0, 0, lq_work);
-//			dtrmm_rlnn_libstr(n, n, 1.0, &sA, 0, 0, &sD, 0, 0, &sD, 0, 0); //
-//			dtrmm_rutn_libstr(n, n, 1.0, &sA, 0, 0, &sB, 0, 0, &sD, 0, 0);
-//			dtrsm_llnu_libstr(n, n, 1.0, &sD, 0, 0, &sB, 0, 0, &sB, 0, 0);
-//			dtrsm_lunn_libstr(n, n, 1.0, &sD, 0, 0, &sB, 0, 0, &sB, 0, 0);
-//			dtrsm_rltn_libstr(n, n, 1.0, &sB2, 0, 0, &sD, 0, 0, &sD, 0, 0); //
-//			dtrsm_rltu_libstr(n, n, 1.0, &sD, 0, 0, &sB, 0, 0, &sB, 0, 0);
-//			dtrsm_rutn_libstr(n, n, 1.0, &sD, 0, 0, &sB, 0, 0, &sB, 0, 0);
-//			dgemv_n_libstr(n, n, 1.0, &sA, 0, 0, &sx, 0, 0.0, &sy, 0, &sz, 0);
-//			dgemv_t_libstr(n, n, 1.0, &sA, 0, 0, &sx, 0, 0.0, &sy, 0, &sz, 0);
-//			dsymv_l_libstr(n, n, 1.0, &sA, 0, 0, &sx, 0, 0.0, &sy, 0, &sz, 0);
-//			dgemv_nt_libstr(n, n, 1.0, 1.0, &sA, 0, 0, &sx, 0, &sx, 0, 0.0, 0.0, &sy, 0, &sy, 0, &sz, 0, &sz, 0);
+			dgemm_nt_libstr(n, n, n, 1.0, sA, 0, 0, sB, 0, 0, 0.0, sC, 0, 0, sD, 0, 0);
+//			dgemm_nn_libstr(n, n, n, 1.0, sA, 0, 0, sB, 0, 0, 0.0, sC, 0, 0, sD, 0, 0);
+//			dsyrk_ln_libstr(n, n, 1.0, sA, 0, 0, sA, 0, 0, 0.0, sC, 0, 0, sD, 0, 0);
+//			dsyrk_ln_mn_libstr(n, n, n, 1.0, sA, 0, 0, sA, 0, 0, 0.0, sC, 0, 0, sD, 0, 0);
+//			dpotrf_l_mn_libstr(n, n, sB, 0, 0, sB, 0, 0);
+//			dpotrf_l_libstr(n, sB, 0, 0, sB, 0, 0);
+//			dgetrf_nopivot_libstr(n, n, sB, 0, 0, sB, 0, 0);
+//			dgetrf_libstr(n, n, sB, 0, 0, sB, 0, 0, ipiv);
+//			dgeqrf_libstr(n, n, sC, 0, 0, sD, 0, 0, qr_work);
+//			dcolin_libstr(n, sx, 0, sB3, 0, n-1);
+//			dgelqf_libstr(n, n, sB3, 0, 0, sB3, 0, 0, lq_work);
+//			dtrmm_rlnn_libstr(n, n, 1.0, sA, 0, 0, sD, 0, 0, sD, 0, 0); //
+//			dtrmm_rutn_libstr(n, n, 1.0, sA, 0, 0, sB, 0, 0, sD, 0, 0);
+//			dtrsm_llnu_libstr(n, n, 1.0, sD, 0, 0, sB, 0, 0, sB, 0, 0);
+//			dtrsm_lunn_libstr(n, n, 1.0, sD, 0, 0, sB, 0, 0, sB, 0, 0);
+//			dtrsm_rltn_libstr(n, n, 1.0, sB2, 0, 0, sD, 0, 0, sD, 0, 0); //
+//			dtrsm_rltu_libstr(n, n, 1.0, sD, 0, 0, sB, 0, 0, sB, 0, 0);
+//			dtrsm_rutn_libstr(n, n, 1.0, sD, 0, 0, sB, 0, 0, sB, 0, 0);
+//			dgemv_n_libstr(n, n, 1.0, sA, 0, 0, sx, 0, 0.0, sy, 0, sz, 0);
+//			dgemv_t_libstr(n, n, 1.0, sA, 0, 0, sx, 0, 0.0, sy, 0, sz, 0);
+//			dsymv_l_libstr(n, n, 1.0, sA, 0, 0, sx, 0, 0.0, sy, 0, sz, 0);
+//			dgemv_nt_libstr(n, n, 1.0, 1.0, sA, 0, 0, sx, 0, sx, 0, 0.0, 0.0, sy, 0, sy, 0, sz, 0, sz, 0);
 			}
 
-//		d_print_strmat(n, n, &sD, 0, 0);
+//		d_print_strmat(n, n, sD, 0, 0);
 
 		gettimeofday(&tv2, NULL); // stop
 
@@ -457,16 +457,16 @@ int main()
 		free(qr_work);
 		free(lq_work);
 		
-		d_free_strmat(&sA);
-		d_free_strmat(&sB);
-		d_free_strmat(&sB2);
-		d_free_strmat(&sB3);
-		d_free_strmat(&sC);
-		d_free_strmat(&sD);
-		d_free_strmat(&sE);
-		d_free_strvec(&sx);
-		d_free_strvec(&sy);
-		d_free_strvec(&sz);
+		d_free_strmat(sA);
+		d_free_strmat(sB);
+		d_free_strmat(sB2);
+		d_free_strmat(sB3);
+		d_free_strmat(sC);
+		d_free_strmat(sD);
+		d_free_strmat(sE);
+		d_free_strvec(sx);
+		d_free_strvec(sy);
+		d_free_strvec(sz);
 
 		}
 

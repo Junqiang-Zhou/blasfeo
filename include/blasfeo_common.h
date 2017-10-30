@@ -52,7 +52,7 @@ struct d_strmat
 	double *pA; // pointer to a pm*pn array of doubles, the first is aligned to cache line size
 	double *dA; // pointer to a min(m,n) (or max???) array of doubles
 	int use_dA; // flag to tell if dA can be used
-	int memory_size; // size of needed memory
+	int memsize; // size of needed memory
 	};
 
 struct s_strmat
@@ -64,7 +64,7 @@ struct s_strmat
 	float *pA; // pointer to a pm*pn array of floats, the first is aligned to cache line size
 	float *dA; // pointer to a min(m,n) (or max???) array of floats
 	int use_dA; // flag to tell if dA can be used
-	int memory_size; // size of needed memory
+	int memsize; // size of needed memory
 	};
 
 // vector structure
@@ -73,7 +73,7 @@ struct d_strvec
 	int m; // size
 	int pm; // packed size
 	double *pa; // pointer to a pm array of doubles, the first is aligned to cache line size
-	int memory_size; // size of needed memory
+	int memsize; // size of needed memory
 	};
 
 struct s_strvec
@@ -81,8 +81,10 @@ struct s_strvec
 	int m; // size
 	int pm; // packed size
 	float *pa; // pointer to a pm array of floats, the first is aligned to cache line size
-	int memory_size; // size of needed memory
+	int memsize; // size of needed memory
 	};
+
+#define BLASFEO_ALIGN 64
 
 #define DMATEL_LIBSTR(sA,ai,aj) ((sA)->pA[((ai)-((ai)&(D_PS-1)))*(sA)->cn+(aj)*D_PS+((ai)&(D_PS-1))])
 #define SMATEL_LIBSTR(sA,ai,aj) ((sA)->pA[((ai)-((ai)&(S_PS-1)))*(sA)->cn+(aj)*S_PS+((ai)&(S_PS-1))])
@@ -99,7 +101,7 @@ struct d_strmat
 	double *pA; // pointer to a m*n array of doubles
 	double *dA; // pointer to a min(m,n) (or max???) array of doubles
 	int use_dA; // flag to tell if dA can be used
-	int memory_size; // size of needed memory
+	int memsize; // size of needed memory
 	};
 
 struct s_strmat
@@ -109,7 +111,7 @@ struct s_strmat
 	float *pA; // pointer to a m*n array of floats
 	float *dA; // pointer to a min(m,n) (or max???) array of floats
 	int use_dA; // flag to tell if dA can be used
-	int memory_size; // size of needed memory
+	int memsize; // size of needed memory
 	};
 
 // vector structure
@@ -117,15 +119,17 @@ struct d_strvec
 	{
 	int m; // size
 	double *pa; // pointer to a m array of doubles, the first is aligned to cache line size
-	int memory_size; // size of needed memory
+	int memsize; // size of needed memory
 	};
 
 struct s_strvec
 	{
 	int m; // size
 	float *pa; // pointer to a m array of floats, the first is aligned to cache line size
-	int memory_size; // size of needed memory
+	int memsize; // size of needed memory
 	};
+
+#define BLASFEO_ALIGN 8
 
 #define DMATEL_LIBSTR(sA,ai,aj) ((sA)->pA[(ai)+(aj)*(sA)->m])
 #define SMATEL_LIBSTR(sA,ai,aj) ((sA)->pA[(ai)+(aj)*(sA)->m])

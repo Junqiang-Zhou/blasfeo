@@ -2151,85 +2151,118 @@ void dvecad_libsp(int kmax, int *idx, double alpha, double *x, double *y)
 
 
 // return the memory size (in bytes) needed for a strmat
-int d_size_strmat(int m, int n)
+int d_memsize_strmat(int m, int n)
 	{
+	int diag_size = m<n ? m : n;
+
 	const int bs = 4;
 	int nc = D_NC;
 	int al = bs*nc;
+
 	int pm = (m+bs-1)/bs*bs;
 	int cn = (n+nc-1)/nc*nc;
-	int tmp = m<n ? (m+al-1)/al*al : (n+al-1)/al*al; // al(min(m,n)) // XXX max ???
-	int memory_size = (pm*cn+tmp)*sizeof(double);
-	return memory_size;
-	}
 
+	int str_size = 0;
+	str_size += sizeof(struct d_strmat);
 
+	int mem_size = 0;
+	mem_size += pm*cn*sizeof(double);
+	mem_size += (diag_size+al-1)/al*al*sizeof(double);
 
-// return the memory size (in bytes) needed for the digonal of a strmat
-int d_size_diag_strmat(int m, int n)
-	{
-	const int bs = 4;
-	int nc = D_NC;
-	int al = bs*nc;
-	int tmp = m<n ? (m+al-1)/al*al : (n+al-1)/al*al; // al(min(m,n)) // XXX max ???
-	int memory_size = tmp*sizeof(double);
-	return memory_size;
+	int size = 0;
+	size += (str_size+BLASFEO_ALIGN-1)/BLASFEO_ALIGN*BLASFEO_ALIGN;
+	size += (mem_size+BLASFEO_ALIGN-1)/BLASFEO_ALIGN*BLASFEO_ALIGN;
+
+	return size;
 	}
 
 
 
 // create a matrix structure for a matrix of size m*n by using memory passed by a pointer
-void d_create_strmat(int m, int n, struct d_strmat *sA, void *memory)
+// XXX assumes memory to be aligned to BLASFEO_ALIGN-bytes
+struct d_strmat * d_create_strmat(int m, int n, void *memory)
 	{
+	int diag_size = m<n ? m : n;
+
 	const int bs = 4;
 	int nc = D_NC;
 	int al = bs*nc;
-	sA->m = m;
-	sA->n = n;
 	int pm = (m+bs-1)/bs*bs;
 	int cn = (n+nc-1)/nc*nc;
+
+	char *c_ptr = memory;
+
+	struct d_strmat *sA = (struct d_strmat *) c_ptr;
+	c_ptr += (sizeof(struct d_strmat)+BLASFEO_ALIGN-1)/BLASFEO_ALIGN*BLASFEO_ALIGN;
+
+	//
+	sA->pA = (double *) c_ptr;
+	c_ptr += pm*cn*sizeof(double);
+	//
+	sA->dA = (double *) c_ptr;
+	c_ptr += (diag_size+al-1)/al*al*sizeof(double);
+	//
+	sA->m = m;
+	//
+	sA->n = n;
+	//
 	sA->pm = pm;
+	//
 	sA->cn = cn;
-	double *ptr = (double *) memory;
-	sA->pA = ptr;
-	ptr += pm*cn;
-	int tmp = m<n ? (m+al-1)/al*al : (n+al-1)/al*al; // al(min(m,n)) // XXX max ???
-	sA->dA = ptr;
-	ptr += tmp;
+	//
 	sA->use_dA = 0;
-	sA->memory_size = (pm*cn+tmp)*sizeof(double);
-	return;
+	//
+	sA->memsize = d_memsize_strmat(m, n);
+
+	return sA;
 	}
 
 
 
 // return memory size (in bytes) needed for a strvec
-int d_size_strvec(int m)
+int d_memsize_strvec(int m)
 	{
 	const int bs = 4;
-//	int nc = D_NC;
-//	int al = bs*nc;
 	int pm = (m+bs-1)/bs*bs;
-	int memory_size = pm*sizeof(double);
-	return memory_size;
+
+	int str_size = 0;
+	str_size += sizeof(struct d_strvec);
+
+	int mem_size = 0;
+	mem_size = pm*sizeof(double);
+
+	int size = 0;
+	size += (str_size+BLASFEO_ALIGN-1)/BLASFEO_ALIGN*BLASFEO_ALIGN;
+	size += (mem_size+BLASFEO_ALIGN-1)/BLASFEO_ALIGN*BLASFEO_ALIGN;
+
+	return size;
 	}
 
 
 
-// create a vector structure for a vector of size m by using memory passed by a pointer
-void d_create_strvec(int m, struct d_strvec *sa, void *memory)
+// create a matrix structure for a matrix of size m*n by using memory passed by a pointer
+// XXX assumes memory to be aligned to BLASFEO_ALIGN-bytes
+struct d_strvec * d_create_strvec(int m, void *memory)
 	{
 	const int bs = 4;
-//	int nc = D_NC;
-//	int al = bs*nc;
-	sa->m = m;
 	int pm = (m+bs-1)/bs*bs;
+
+	char *c_ptr = memory;
+
+	struct d_strvec *sa = (struct d_strvec *) c_ptr;
+	c_ptr += (sizeof(struct d_strvec)+BLASFEO_ALIGN-1)/BLASFEO_ALIGN*BLASFEO_ALIGN;
+
+	//
+	sa->pa = (double *) c_ptr;
+	c_ptr += pm*sizeof(double);
+	//
+	sa->m = m;
+	//
 	sa->pm = pm;
-	double *ptr = (double *) memory;
-	sa->pa = ptr;
-//	ptr += pm;
-	sa->memory_size = pm*sizeof(double);
-	return;
+	//
+	sa->memsize = d_memsize_strvec(m);
+
+	return sa;
 	}
 
 
@@ -2702,33 +2735,6 @@ void d_cvt_strvec2vec(int m, struct d_strvec *sa, int ai, double *a)
 	int ii;
 	for(ii=0; ii<m; ii++)
 		a[ii] = pa[ii];
-	return;
-	}
-
-
-
-// cast a matrix into a matrix structure
-void d_cast_mat2strmat(double *A, struct d_strmat *sA)
-	{
-	sA->pA = A;
-	return;
-	}
-
-
-
-// cast a matrix into the diagonal of a matrix structure
-void d_cast_diag_mat2strmat(double *dA, struct d_strmat *sA)
-	{
-	sA->dA = dA;
-	return;
-	}
-
-
-
-// cast a vector into a vector structure
-void d_cast_vec2vecmat(double *a, struct d_strvec *sa)
-	{
-	sa->pa = a;
 	return;
 	}
 

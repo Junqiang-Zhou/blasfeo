@@ -33,6 +33,9 @@
 #endif
 
 #include "../include/blasfeo_common.h"
+#include "../include/blasfeo_block_size.h"
+#include "../include/blasfeo_s_aux.h"
+#include "../include/blasfeo_v_aux_ext_dep.h"
 
 
 
@@ -205,28 +208,14 @@ void s_print_e_tran_mat(int row, int col, float *A, int lda)
 
 
 
-#include "../include/blasfeo_block_size.h"
-
-
-
 // create a matrix structure for a matrix of size m*n by dynamically allocating the memory
-void s_allocate_strmat(int m, int n, struct s_strmat *sA)
+struct s_strmat * s_allocate_strmat(int m, int n)
 	{
-	const int bs = S_PS;
-	int nc = S_NC;
-	int al = bs*nc;
-	sA->m = m;
-	sA->n = n;
-	int pm = (m+bs-1)/bs*bs;
-	int cn = (n+nc-1)/nc*nc;
-	sA->pm = pm;
-	sA->cn = cn;
-	s_zeros_align(&(sA->pA), sA->pm, sA->cn);
-	int tmp = m<n ? (m+al-1)/al*al : (n+al-1)/al*al; // al(min(m,n)) // XXX max ???
-	s_zeros_align(&(sA->dA), tmp, 1);
-	sA->use_dA = 0;
-	sA->memory_size = (pm*cn+tmp)*sizeof(float);
-	return;
+	int size = s_memsize_strmat(m, n);
+	void *mem;
+	v_zeros_align(&mem, size);
+	struct s_strmat *sA = s_create_strmat(m, n, mem);
+	return sA;
 	}
 
 
@@ -234,25 +223,20 @@ void s_allocate_strmat(int m, int n, struct s_strmat *sA)
 // free memory of a matrix structure
 void s_free_strmat(struct s_strmat *sA)
 	{
-	s_free_align(sA->pA);
-	s_free_align(sA->dA);
+	v_free_align(sA);
 	return;
 	}
 
 
 
 // create a vector structure for a vector of size m by dynamically allocating the memory
-void s_allocate_strvec(int m, struct s_strvec *sa)
+struct s_strvec * s_allocate_strvec(int m)
 	{
-	const int bs = S_PS;
-//	int nc = S_NC;
-//	int al = bs*nc;
-	sa->m = m;
-	int pm = (m+bs-1)/bs*bs;
-	sa->pm = pm;
-	s_zeros_align(&(sa->pa), sa->pm, 1);
-	sa->memory_size = pm*sizeof(float);
-	return;
+	int size = s_memsize_strvec(m);
+	void *mem;
+	v_zeros_align(&mem, size);
+	struct s_strvec *sa = s_create_strvec(m, mem);
+	return sa;
 	}
 
 
@@ -260,7 +244,7 @@ void s_allocate_strvec(int m, struct s_strvec *sa)
 // free memory of a matrix structure
 void s_free_strvec(struct s_strvec *sa)
 	{
-	s_free_align(sa->pa);
+	v_free_align(sa);
 	return;
 	}
 
@@ -486,16 +470,14 @@ void s_print_e_tran_strvec(int m, struct s_strvec *sa, int ai)
 
 
 
-// create a matrix structure for a matrix of size m*n
-void s_allocate_strmat(int m, int n, struct s_strmat *sA)
+// create a matrix structure for a matrix of size m*n by dynamically allocating the memory
+struct s_strmat * s_allocate_strmat(int m, int n)
 	{
-	sA->m = m;
-	sA->n = n;
-	s_zeros(&(sA->pA), sA->m, sA->n);
-	int tmp = m<n ? m : n; // al(min(m,n)) // XXX max ???
-	s_zeros(&(sA->dA), tmp, 1);
-	sA->memory_size = (m*n+tmp)*sizeof(float);
-	return;
+	int size = s_memsize_strmat(m, n);
+	void *mem;
+	v_zeros_align(&mem, size);
+	struct s_strmat *sA = s_create_strmat(m, n, mem);
+	return sA;
 	}
 
 
@@ -503,28 +485,28 @@ void s_allocate_strmat(int m, int n, struct s_strmat *sA)
 // free memory of a matrix structure
 void s_free_strmat(struct s_strmat *sA)
 	{
-	free(sA->pA);
-	free(sA->dA);
+	v_free_align(sA);
 	return;
 	}
 
 
 
-// create a vector structure for a vector of size m
-void s_allocate_strvec(int m, struct s_strvec *sa)
+// create a vector structure for a vector of size m by dynamically allocating the memory
+struct s_strvec * s_allocate_strvec(int m)
 	{
-	sa->m = m;
-	s_zeros(&(sa->pa), sa->m, 1);
-	sa->memory_size = m*sizeof(float);
-	return;
+	int size = s_memsize_strvec(m);
+	void *mem;
+	v_zeros_align(&mem, size);
+	struct s_strvec *sa = s_create_strvec(m, mem);
+	return sa;
 	}
 
 
 
-// free memory of a vector structure
+// free memory of a matrix structure
 void s_free_strvec(struct s_strvec *sa)
 	{
-	free(sa->pa);
+	v_free_align(sa);
 	return;
 	}
 

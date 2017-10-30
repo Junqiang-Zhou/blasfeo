@@ -87,30 +87,24 @@ int main()
 	// matrices in matrix struct format
 	//
 
-	struct s_strmat sA;
-	s_allocate_strmat(n, n, &sA);
-	s_cvt_mat2strmat(n, n, A, n, &sA, 0, 0);
-	s_print_strmat(n, n, &sA, 0, 0);
+	struct s_strmat *sA = s_allocate_strmat(n, n);
+	s_cvt_mat2strmat(n, n, A, n, sA, 0, 0);
+	s_print_strmat(n, n, sA, 0, 0);
 
-	struct s_strmat sB;
-	s_allocate_strmat(n, n, &sB);
-	s_cvt_mat2strmat(n, n, B, n, &sB, 0, 0);
-	s_print_strmat(n, n, &sB, 0, 0);
+	struct s_strmat *sB = s_allocate_strmat(n, n);
+	s_cvt_mat2strmat(n, n, B, n, sB, 0, 0);
+	s_print_strmat(n, n, sB, 0, 0);
 
-	struct s_strmat sD;
-	s_allocate_strmat(n, n, &sD);
-	s_cvt_mat2strmat(n, n, D, n, &sD, 0, 0);
+	struct s_strmat *sD = s_allocate_strmat(n, n);
+	s_cvt_mat2strmat(n, n, D, n, sD, 0, 0);
 
-	struct s_strvec sx;
-	s_allocate_strvec(n, &sx);
-	sx.pa[7] = 1.0;
-	s_print_tran_strvec(n, &sx, 0);
+	struct s_strvec *sx = s_allocate_strvec(n);
+	sx->pa[7] = 1.0;
+	s_print_tran_strvec(n, sx, 0);
 
-	struct s_strvec sz0;
-	s_allocate_strvec(n, &sz0);
+	struct s_strvec *sz0 = s_allocate_strvec(n);
 
-	struct s_strvec sz1;
-	s_allocate_strvec(n, &sz1);
+	struct s_strvec *sz1 = s_allocate_strvec(n);
 
 	//
 	// tests
@@ -129,48 +123,48 @@ int main()
 //	kernel_sgemm_nt_12x4_lib4(4, &alpha, sA.pA, sA.cn, sB.pA, &beta, sD.pA, sD.cn, sD.pA, sD.cn);
 //	kernel_sgemm_nt_8x8_lib4(8, &alpha, sA.pA, sA.cn, sB.pA, sB.cn, &beta, sD.pA, sD.cn, sD.pA, sD.cn);
 //	kernel_sgemm_nt_8x4_lib4(2, &alpha, sA.pA, sA.cn, sB.pA, &beta, sD.pA, sD.cn, sD.pA, sD.cn);
-//	s_print_strmat(n, n, &sD, 0, 0);
+//	s_print_strmat(n, n, sD, 0, 0);
 //	return 0;
-//	sgemm_nt_libstr(n, n, 5, 1.0, &sA, 0, 0, &sB, 0, 0, 0.0, &sB, 0, 0, &sD, 0, 0);
-//	ssyrk_ln_libstr(n, n, 1.0, &sA, 0, 0, &sB, 0, 0, 0.0, &sB, 0, 0, &sD, 0, 0);
-//	ssyrk_ln_mn_libstr(n, n, n, 1.0, &sA, 0, 0, &sB, 0, 0, 0.0, &sB, 0, 0, &sD, 0, 0);
+//	sgemm_nt_libstr(n, n, 5, 1.0, sA, 0, 0, sB, 0, 0, 0.0, sB, 0, 0, sD, 0, 0);
+//	ssyrk_ln_libstr(n, n, 1.0, sA, 0, 0, sB, 0, 0, 0.0, sB, 0, 0, sD, 0, 0);
+//	ssyrk_ln_mn_libstr(n, n, n, 1.0, sA, 0, 0, sB, 0, 0, 0.0, sB, 0, 0, sD, 0, 0);
 //	kernel_ssyrk_nt_l_8x8_lib8(n, &alpha, sA.pA, sA.pA, &beta, sB.pA, sD.pA);
-//	sgecp_libstr(16, 16, &sA, 2, 0, &sD, 1, 0);
-//	sgetr_libstr(16, 16, &sA, 2, 0, &sD, 2, 0);
-//	s_print_strmat(n, n, &sD, 0, 0);
-//	sgemv_n_libstr(6, 6, 1.0, &sA, 1, 0, &sx, 0, 0.0, &sz0, 0, &sz0, 0);
-//	sgemv_t_libstr(11, 8, 1.0, &sA, 0, 0, &sx, 0, 0.0, &sz0, 0, &sz0, 0);
-//	strmv_lnn_libstr(6, 6, &sA, 1, 0, &sx, 0, &sz0, 0);
-//	strmv_ltn_libstr(10, 10, &sA, 1, 0, &sx, 0, &sz0, 0);
+//	sgecp_libstr(16, 16, sA, 2, 0, sD, 1, 0);
+//	sgetr_libstr(16, 16, sA, 2, 0, sD, 2, 0);
+//	s_print_strmat(n, n, sD, 0, 0);
+//	sgemv_n_libstr(6, 6, 1.0, sA, 1, 0, sx, 0, 0.0, sz0, 0, sz0, 0);
+//	sgemv_t_libstr(11, 8, 1.0, sA, 0, 0, sx, 0, 0.0, sz0, 0, sz0, 0);
+//	strmv_lnn_libstr(6, 6, sA, 1, 0, sx, 0, sz0, 0);
+//	strmv_ltn_libstr(10, 10, sA, 1, 0, sx, 0, sz0, 0);
 //	sA.pA[0] = 1.0;
-//	strsv_lnn_libstr(10, &sA, 0, 0, &sx, 0, &sz0, 0);
-//	for(ii=0; ii<8; ii++) sA.dA[ii] = 1.0/sgeex1_libstr(&sA, ii, ii);
+//	strsv_lnn_libstr(10, sA, 0, 0, sx, 0, sz0, 0);
+//	for(ii=0; ii<8; ii++) sA.dA[ii] = 1.0/sgeex1_libstr(sA, ii, ii);
 //	kernel_strsv_lt_inv_8_lib8(0, sA.pA, sA.cn, sA.dA, sx.pa, sx.pa, sz0.pa);
 //	kernel_strsv_lt_inv_8_vs_lib8(0, sA.pA, sA.cn, sA.dA, sx.pa, sx.pa, sz0.pa, 3);
-//	s_print_strmat(n, n, &sA, 0, 0);
-//	strsv_ltn_libstr(12, &sA, 0, 0, &sx, 0, &sz0, 0);
-//	strsv_ltn_mn_libstr(11, 3, &sA, 0, 0, &sx, 0, &sz0, 0);
-//	s_print_strmat(n, n, &sA, 0, 0);
+//	s_print_strmat(n, n, sA, 0, 0);
+//	strsv_ltn_libstr(12, sA, 0, 0, sx, 0, sz0, 0);
+//	strsv_ltn_mn_libstr(11, 3, sA, 0, 0, sx, 0, sz0, 0);
+//	s_print_strmat(n, n, sA, 0, 0);
 //	kernel_sgemv_nt_4_lib8(n, &alpha, &alpha, sA.pA, sA.cn, sx.pa, sx.pa, &beta, sz1.pa, sz0.pa, sz1.pa);
 //	kernel_sgemv_nt_4_vs_lib8(n, &alpha, &alpha, sA.pA, sA.cn, sx.pa, sx.pa, &beta, sz1.pa, sz0.pa, sz1.pa, 3);
-//	sgemv_nt_libstr(5, 2, alpha, alpha, &sA, 0, 0, &sx, 0, &sx, 0, beta, beta, &sz0, 0, &sz1, 0, &sz0, 0, &sz1, 0);
-//	ssymv_l_libstr(10, 10, alpha, &sA, 1, 0, &sx, 0, beta, &sz0, 0, &sz1, 0);
-//	s_print_tran_strvec(n, &sz0, 0);
-//	s_print_tran_strvec(n, &sz1, 0);
+//	sgemv_nt_libstr(5, 2, alpha, alpha, sA, 0, 0, sx, 0, sx, 0, beta, beta, sz0, 0, sz1, 0, sz0, 0, sz1, 0);
+//	ssymv_l_libstr(10, 10, alpha, sA, 1, 0, sx, 0, beta, sz0, 0, sz1, 0);
+//	s_print_tran_strvec(n, sz0, 0);
+//	s_print_tran_strvec(n, sz1, 0);
 //	return 0;
-//	sgesc_libstr(16, 9, 2.0, &sD, 0, 0);
-//	s_print_strmat(n, n, &sD, 0, 0);
+//	sgesc_libstr(16, 9, 2.0, sD, 0, 0);
+//	s_print_strmat(n, n, sD, 0, 0);
 //	kernel_spotrf_nt_l_8x8_lib8(0, sD.pA, sD.pA, sD.pA, sD.pA, sx.pa);
-//	s_print_strmat(n, n, &sD, 0, 0);
-//	s_print_tran_strvec(n, &sx, 0);
+//	s_print_strmat(n, n, sD, 0, 0);
+//	s_print_tran_strvec(n, sx, 0);
 //	kernel_strsm_nt_rl_inv_8x8_lib8(0, sD.pA, sD.pA, sD.pA+8*sD.cn, sD.pA+8*sD.cn, sD.pA, sx.pa);
-//	s_print_strmat(n, n, &sD, 0, 0);
+//	s_print_strmat(n, n, sD, 0, 0);
 //	kernel_spotrf_nt_l_8x8_lib8(8, sD.pA+8*sD.cn, sD.pA+8*sD.cn, sD.pA+8*sD.cn+8*8, sD.pA+8*sD.cn+8*8, sx.pa+8);
-//	spotrf_l_mn_libstr(23, 17, &sD, 0, 0, &sD, 0, 0);
-//	spotrf_l_libstr(n, &sD, 0, 0, &sD, 0, 0);
+//	spotrf_l_mn_libstr(23, 17, sD, 0, 0, sD, 0, 0);
+//	spotrf_l_libstr(n, sD, 0, 0, sD, 0, 0);
 //	kernel_strmm_nn_rl_8x4_lib8(3, &alpha, sB.pA, 7, sA.pA, sA.cn, sD.pA);
-	strmm_rlnn_libstr(16, 12, 1.0, &sA, 0, 0, &sB, 0, 0, &sD, 0, 0);
-	s_print_strmat(n, n, &sD, 0, 0);
+	strmm_rlnn_libstr(16, 12, 1.0, sA, 0, 0, sB, 0, 0, sD, 0, 0);
+	s_print_strmat(n, n, sD, 0, 0);
 	return 0;
 
 
@@ -182,9 +176,9 @@ int main()
 	free(A);
 	free(B);
 	free(D);
-	s_free_strmat(&sA);
-	s_free_strmat(&sB);
-	s_free_strmat(&sD);
+	s_free_strmat(sA);
+	s_free_strmat(sB);
+	s_free_strmat(sD);
 
 	return 0;
 	

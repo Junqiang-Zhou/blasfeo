@@ -73,9 +73,9 @@ void s_print_e_tran_mat(int row, int col, float *A, int lda);
 
 #ifdef BLASFEO_COMMON
 // create a strmat for a matrix of size m*n by dynamically allocating memory
-void s_allocate_strmat(int m, int n, struct s_strmat *sA);
+struct s_strmat * s_allocate_strmat(int m, int n);
 // create a strvec for a vector of size m by dynamically allocating memory
-void s_allocate_strvec(int m, struct s_strvec *sa);
+struct s_strvec * s_allocate_strvec(int m);
 // free the memory allocated by d_allocate_strmat
 void s_free_strmat(struct s_strmat *sA);
 // free the memory allocated by d_allocate_strvec

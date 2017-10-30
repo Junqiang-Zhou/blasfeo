@@ -59,24 +59,19 @@ void ddiareg_lib(int kmax, double reg, int offset, double *pD, int sdd);
 // 5) _sp(sparse)
 
 // returns the memory size (in bytes) needed for a strmat
-int d_size_strmat(int m, int n); // TODO d_memsize_strmat
-// returns the memory size (in bytes) needed for the diagonal of a strmat
-int d_size_diag_strmat(int m, int n);
+int d_memsize_strmat(int m, int n);
 // returns the memory size (in bytes) needed for a strvec
-int d_size_strvec(int m);
+int d_memsize_strvec(int m);
 // create a strmat for a matrix of size m*n by using memory passed by a pointer (pointer is not updated)
-void d_create_strmat(int m, int n, struct d_strmat *sA, void *memory);
+struct d_strmat * d_create_strmat(int m, int n, void *memory);
 // create a strvec for a vector of size m by using memory passed by a pointer (pointer is not updated)
-void d_create_strvec(int m, struct d_strvec *sA, void *memory);
+struct d_strvec * d_create_strvec(int m, void *memory);
 void d_cvt_mat2strmat(int m, int n, double *A, int lda, struct d_strmat *sA, int ai, int aj);
 void d_cvt_vec2strvec(int m, double *a, struct d_strvec *sa, int ai);
 void d_cvt_tran_mat2strmat(int m, int n, double *A, int lda, struct d_strmat *sA, int ai, int aj);
 void d_cvt_strmat2mat(int m, int n, struct d_strmat *sA, int ai, int aj, double *A, int lda);
 void d_cvt_strvec2vec(int m, struct d_strvec *sa, int ai, double *a);
 void d_cvt_tran_strmat2mat(int m, int n, struct d_strmat *sA, int ai, int aj, double *A, int lda);
-void d_cast_mat2strmat(double *A, struct d_strmat *sA);
-void d_cast_diag_mat2strmat(double *dA, struct d_strmat *sA);
-void d_cast_vec2vecmat(double *a, struct d_strvec *sa);
 void dgein1_libstr(double a, struct d_strmat *sA, int ai, int aj);
 double dgeex1_libstr(struct d_strmat *sA, int ai, int aj);
 void dvecin1_libstr(double a, struct d_strvec *sx, int xi);
